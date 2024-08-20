@@ -9,10 +9,9 @@ from tensorflow.keras.utils import normalize
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D,Activation,Dropout,Flatten,Dense
 from tensorflow.keras.utils import to_categorical
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '3'
 
-#from sklearn.model_selection import train_test_split
 image_directory = "Brain Tumor Data Set/Brain Tumor Data Set/"
-#image_directory = 'Brain Tumor Data Set\Brain Tumor Data Set\Brain Tumor'
 dataset = []
 label = []
 tumor_images = os.listdir(image_directory+'Brain Tumor')
@@ -27,7 +26,7 @@ def preprocess(images,tag):
       image_array = Image.fromarray(image_array,'RGB')
       image_array = image_array.resize((input_size,input_size))
       dataset.append(np.array(image_array))
-      if(image == 'Brain Tumor'):
+      if(tag == 'Brain Tumor/'):
         label.append(1)
       else:
         label.append(0)
@@ -36,7 +35,6 @@ preprocess(tumor_images,'Brain Tumor/')
 preprocess(healthy_images,'Healthy/')
 dataset = np.array(dataset)
 label = np.array(label)
-print(len(dataset))
 
 x_train = dataset[int(len(dataset)*0.2):]
 x_test = dataset[:int(len(dataset)*0.2)]
@@ -55,12 +53,10 @@ model.add(Conv2D(32,(3,3),input_shape=(input_size,input_size,3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size = (2,2)))
 
-model = Sequential()
 model.add(Conv2D(32,(3,3),kernel_initializer='he_uniform'))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size = (2,2)))
 
-model = Sequential()
 model.add(Conv2D(64,(3,3),kernel_initializer='he_uniform'))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size = (2,2)))
@@ -75,5 +71,5 @@ model.add(Activation('sigmoid'))
 
 model.compile(loss = 'binary_crossentropy',optimizer = 'adam',metrics = ['accuracy'])
 #model.compile(loss = 'categorical_crossentropy',optimizer = 'adam',metrics = ['accuracy'])
-model.fit(x_train,y_train,batch_size = 16,verbose = 1,epochs = 5,validation_data= (x_test,y_test),shuffle = False)
+model.fit(x_train,y_train,batch_size = 16,verbose = 1,epochs = 20,validation_data= (x_test,y_test),shuffle = True)
 model.save('Brain_Tumor10Epochs.keras')
