@@ -3,11 +3,12 @@ from keras.models import load_model
 from PIL import Image
 import numpy as np
 import os
+import json
 import tensorflow as tf
-from flask import Flask, request,render_template
+from flask import Flask, request,jsonify,render_template
 from werkzeug.utils import secure_filename
 
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '3'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 app = Flask(__name__)
 
@@ -26,7 +27,14 @@ def get_result(img):
     image = np.array(image)
     input_img = np.expand_dims(image,axis = 0)
     result = model.predict(input_img)
-    return result
+    nonCancerAccuracy = result[0][0]
+    if(nonCancerAccuracy > 0.5):
+        accuracy = nonCancerAccuracy
+        result = 1
+    else:
+        accuracy = 1- nonCancerAccuracy
+        result = 0
+    return result,accuracy
 
 @app.route('/',methods = ['GET'])
 def index():
@@ -40,9 +48,10 @@ def upload():
         basepath = os.path.dirname(__file__)
         file_path = os.path.join(basepath,'uploads',secure_filename(f.filename))
         f.save(file_path)
-        value = get_result(file_path)
+        value,accuracy = get_result(file_path)
         result = get_className(value)
-        return result
+        print(result,accuracy)
+        return (result + "\nAccuracy is: "+ str(accuracy * 100))
     return None
 
 if __name__ == '__main__':
