@@ -16,6 +16,9 @@ img= np.array(img)
 input_imgs = np.expand_dims(img,axis=0,)
 
 predictions = model.predict(input_imgs)
-print(predictions[0][0])
+
+# Step 2: Convert predicted probabilities to class labels
+predicted_classes = np.argmax(predictions, axis=1)
+
 result = np.where(predictions > 0.5, 1,0)
 print(result)

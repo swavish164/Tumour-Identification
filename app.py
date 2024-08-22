@@ -27,14 +27,16 @@ def get_result(img):
     image = np.array(image)
     input_img = np.expand_dims(image,axis = 0)
     result = model.predict(input_img)
+    print(result)
     nonCancerAccuracy = result[0][0]
+    print(nonCancerAccuracy)
     if(nonCancerAccuracy > 0.5):
         accuracy = nonCancerAccuracy
         result = 1
     else:
         accuracy = 1- nonCancerAccuracy
         result = 0
-    return result,accuracy
+    return result
 
 @app.route('/',methods = ['GET'])
 def index():
@@ -48,10 +50,9 @@ def upload():
         basepath = os.path.dirname(__file__)
         file_path = os.path.join(basepath,'uploads',secure_filename(f.filename))
         f.save(file_path)
-        value,accuracy = get_result(file_path)
+        value = get_result(file_path)
         result = get_className(value)
-        print(result,accuracy)
-        return (result + "\nAccuracy is: "+ str(accuracy * 100))
+        return (result)
     return None
 
 if __name__ == '__main__':
