@@ -1,0 +1,18 @@
+{
+    "name": "Python Flask",
+    "dockerFile": "Dockerfile",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "ms-python.python",
+          "ms-python.vscode-pylance"
+        ]
+      }
+    },
+    "settings": {
+      "terminal.integrated.defaultProfile.linux": "/bin/bash"
+    },
+    "forwardPorts": [5000],
+    "postCreateCommand": "pip install -r requirements.txt",
+    "remoteUser": "vscode"
+  }
